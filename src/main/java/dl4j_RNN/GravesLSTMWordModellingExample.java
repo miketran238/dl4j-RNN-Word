@@ -40,7 +40,7 @@ import java.util.Random;
     http://deeplearning4j.org/lstm
     http://deeplearning4j.org/recurrentnetwork
  */
-public class GravesLSTMCharModellingExample {
+public class GravesLSTMWordModellingExample {
 	public static void main( String[] args ) throws Exception {
         try {
             Loader.load(Nd4jCpu.class);
@@ -52,18 +52,18 @@ public class GravesLSTMCharModellingExample {
 		int miniBatchSize = 16;						//Size of mini batch to use when  training
 		int exampleLength = 20;					//Length of each training example sequence to use. This could certainly be increased
         int tbpttLength = 50;                       //Length for truncated backpropagation through time. i.e., do parameter updates ever 50 characters
-		int numEpochs = 10;							//Total number of training epochs
+		int numEpochs = 100;							//Total number of training epochs
         int generateSamplesEveryNMinibatches = 1;  //How frequently to generate samples from the network? 1000 characters / 50 tbptt length: 20 parameter updates per minibatch
 		int nSamplesToGenerate = 3;					//Number of samples to generate after each training epoch
 		int nCharactersToSample = 1;				//Length of each sample to generate
-		String[] generationInitialization = new String[]{"brown", "eyes"};		//Optional character initialization; a random character is used if null
+		String[] generationInitialization = new String[]{"brown", "eyes"};		//Optional String initialization; a random String is used if null
 		// Above is Used to 'prime' the LSTM with a character sequence to continue/complete.
 		// Initialization characters must all be in CharacterIterator.getMinimalCharacterSet() by default
 		Random rng = new Random(12345);
 
 		//Get a DataSetIterator that handles vectorization of text into something we can use to train
 		// our GravesLSTM network.
-		WordIterator iter = getShakespeareIterator(miniBatchSize,exampleLength);
+		WordIterator iter = getData(miniBatchSize,exampleLength);
 		int nOut = iter.totalOutcomes();
 
 		//Set up network configuration:
@@ -136,14 +136,11 @@ public class GravesLSTMCharModellingExample {
 	 * @param miniBatchSize Number of text segments in each training mini-batch
 	 * @param sequenceLength Number of characters in each text segment.
 	 */
-	public static WordIterator getShakespeareIterator(int miniBatchSize, int sequenceLength) throws Exception{
-		//The Complete Works of William Shakespeare
-		//5.3MB file in UTF-8 Encoding, ~5.4 million characters
-		//https://www.gutenberg.org/ebooks/100
+	public static WordIterator getData(int miniBatchSize, int sequenceLength) throws Exception{
 //		String url = "https://s3.amazonaws.com/dl4j-distribution/pg100.txt";
 //		String tempDir = System.getProperty("java.io.tmpdir");
 //		String fileLocation = tempDir + "/Shakespeare.txt";	//Storage location from downloaded file
-//        String fileLocation = "F:\\Study\\Research\\RNN\\sequences\\training_set";	//Storage location for training
+//      String fileLocation = "F:\\Study\\Research\\RNN\\sequences\\training_set";	//Storage location for training
         String fileLocation = "C:\\Users\\Mike\\Desktop\\arthas.txt";	//Storage location for training
 		File f = new File(fileLocation);
 //		if( !f.exists() ){
@@ -153,7 +150,7 @@ public class GravesLSTMCharModellingExample {
 //			System.out.println("Using existing text file at " + f.getAbsolutePath());
 //		}
 
-		if(!f.exists()) throw new IOException("File does not exist: " + fileLocation);	//Download problem?
+		if(!f.exists()) throw new IOException("File does not exist: " + fileLocation);
 
 //		char[] validCharacters = CharacterIterator.getMinimalCharacterSet();	//Which characters are allowed? Others will be removed
 		return new WordIterator(fileLocation, Charset.forName("ISO-8859-1"),
@@ -181,7 +178,7 @@ public class GravesLSTMCharModellingExample {
 		String[] init;
         init = initialization;
         for( int i=0; i<init.length; i++ ){
-			int idx = iter.convertCharacterToIndex(init[i]);
+			int idx = iter.convertStringToIndex(init[i]);
 			for( int j=0; j<numSamples; j++ ){
 				initializationInput.putScalar(new int[]{j,idx,i}, 1.0f);
 			}

@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 
-/** A simple DataSetIterator for use in the GravesLSTMCharModellingExample.
+/** A simple DataSetIterator for use in the GravesLSTMWordModellingExample.
  * Given a text file and a few options, generate feature vectors and labels for training,
  * where we want to predict the next word in the sequence.<br>
  * This is done by randomly choosing a position in the text file, at offsets of 0, exampleLength, 2*exampleLength, etc
@@ -101,38 +101,11 @@ public class WordIterator implements DataSetIterator {
         initializeOffsets();
     }
 
-    /** A minimal character set, with a-z, A-Z, 0-9 and common punctuation etc */
-    public static char[] getMinimalCharacterSet(){
-        List<Character> validChars = new LinkedList<>();
-        for(char c='a'; c<='z'; c++) validChars.add(c);
-        for(char c='A'; c<='Z'; c++) validChars.add(c);
-        for(char c='0'; c<='9'; c++) validChars.add(c);
-        char[] temp = {'!', '&', '(', ')', '?', '-', '\'', '"', ',', '.', ':', ';', ' ', '\n', '\t'};
-        for( char c : temp ) validChars.add(c);
-        char[] out = new char[validChars.size()];
-        int i=0;
-        for( Character c : validChars ) out[i++] = c;
-        return out;
-    }
-
-    /** As per getMinimalCharacterSet(), but with a few extra characters */
-    public static char[] getDefaultCharacterSet(){
-        List<Character> validChars = new LinkedList<>();
-        for(char c : getMinimalCharacterSet() ) validChars.add(c);
-        char[] additionalChars = {'@', '#', '$', '%', '^', '*', '{', '}', '[', ']', '/', '+', '_',
-            '\\', '|', '<', '>'};
-        for( char c : additionalChars ) validChars.add(c);
-        char[] out = new char[validChars.size()];
-        int i=0;
-        for( Character c : validChars ) out[i++] = c;
-        return out;
-    }
-
     public String convertIndexToCharacter( int idx ){
         return fileWords[idx];
     }
 
-    public int convertCharacterToIndex( String c ){
+    public int convertStringToIndex(String c ){
         return stringToIdxMap.get(c);
     }
 

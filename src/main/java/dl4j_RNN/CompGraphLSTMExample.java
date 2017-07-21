@@ -19,7 +19,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.util.Random;
 
 /**
- * This example is almost identical to the GravesLSTMCharModellingExample, except that it utilizes the ComputationGraph
+ * This example is almost identical to the GravesLSTMWordModellingExample, except that it utilizes the ComputationGraph
  * architecture instead of MultiLayerNetwork architecture. See the javadoc in that example for details.
  * For more details on the ComputationGraph architecture, see http://deeplearning4j.org/compgraph
  *
@@ -49,7 +49,7 @@ public class CompGraphLSTMExample {
 
         //Get a DataSetIterator that handles vectorization of text into something we can use to train
         // our GravesLSTM network.
-        WordIterator iter = GravesLSTMCharModellingExample.getShakespeareIterator(miniBatchSize, exampleLength);
+        WordIterator iter = GravesLSTMWordModellingExample.getData(miniBatchSize, exampleLength);
         int nOut = iter.totalOutcomes();
 
         //Set up network configuration:
@@ -138,7 +138,7 @@ public class CompGraphLSTMExample {
         String[] init;
         init = initialization;
         for( int i=0; i<init.length; i++ ){
-            int idx = iter.convertCharacterToIndex(init[i]);
+            int idx = iter.convertStringToIndex(init[i]);
             for( int j=0; j<numSamples; j++ ){
                 initializationInput.putScalar(new int[]{j,idx,i}, 1.0f);
             }
@@ -160,7 +160,7 @@ public class CompGraphLSTMExample {
             for( int s=0; s<numSamples; s++ ){
                 double[] outputProbDistribution = new double[iter.totalOutcomes()];
                 for( int j=0; j<outputProbDistribution.length; j++ ) outputProbDistribution[j] = output.getDouble(s,j);
-                int sampledCharacterIdx = GravesLSTMCharModellingExample.sampleFromDistribution(outputProbDistribution,rng);
+                int sampledCharacterIdx = GravesLSTMWordModellingExample.sampleFromDistribution(outputProbDistribution,rng);
 
                 nextInput.putScalar(new int[]{s,sampledCharacterIdx}, 1.0f);		//Prepare next time step input
                 sb[s].append(iter.convertIndexToCharacter(sampledCharacterIdx));	//Add sampled character to StringBuilder (human readable output)
